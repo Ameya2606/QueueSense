@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-paper: #F4F3EF;
+    --color-obsidian: #0B0D10;
+    --color-orange: #FF4F00;
+    --color-emerald: #00875A;
+    --color-amber: #D97706;
+  }
+
+  body {
+    background-color: #0B0D10;
+    color: #E2E8F0;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Custom scrollbar for sleek telemetry tables */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #12151B;
+}
+::-webkit-scrollbar-thumb {
+  background: #282D37;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3B4252;
+}
+
+/* Swiss grid hairline borders */
+.swiss-border {
+  border: 1px solid rgba(216, 214, 206, 0.12);
+}
+
+.swiss-border-light {
+  border: 1px solid rgba(216, 214, 206, 0.25);
+}
+
+.swiss-grid-bg {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+/* High precision radar and pulse */
+@keyframes signal-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.96); }
+}
+
+.animate-signal {
+  animation: signal-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
