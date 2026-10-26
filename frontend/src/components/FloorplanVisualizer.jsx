@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export default function FloorplanVisualizer({ isOverloaded, waitMins, queueUtilization, activeHour = 10, riskCategory = "Nominal Flow" }) {
+export default function FloorplanVisualizer({ isOverloaded, waitMins, queueUtilization, activeHour = 10, riskCategory = "Nominal Flow", isMobile = false }) {
   // Determine color theme based on overload severity
   const isCritical = isOverloaded || waitMins > 45.0 || queueUtilization > 1.0;
   const isApproaching = !isCritical && (waitMins > 32.0 || queueUtilization > 0.75);
@@ -15,19 +15,18 @@ export default function FloorplanVisualizer({ isOverloaded, waitMins, queueUtili
   const tokens = Array.from({ length: tokenCount }, (_, i) => i);
 
   return (
-    <div className="bg-obsidian-panel border border-obsidian-border rounded-sm p-4 relative overflow-hidden">
+    <div className="bg-obsidian-panel border border-obsidian-border rounded-sm p-2.5 sm:p-4 relative overflow-hidden max-w-full">
       {/* Header telemetry badge */}
-      <div className="flex flex-wrap items-center justify-between pb-3 mb-2 border-b border-obsidian-border/60 text-xs font-mono">
-        <div className="flex items-center space-x-3">
-          <span className="text-gray-400">TELEMETRY DECK:</span>
-          <span className="font-semibold text-gray-200">LIVE OPD FLOORPLAN &amp; QUEUE TRANSIT</span>
-          <span className="text-obsidian-border">|</span>
-          <span className="text-gray-400">ACTIVE TIMESTEP: <span className="text-white">{String(activeHour).padStart(2, '0')}:00</span></span>
+      <div className="flex flex-wrap items-center justify-between pb-2 mb-2 border-b border-obsidian-border/60 text-[10px] sm:text-xs font-mono gap-1">
+        <div className="flex items-center space-x-2 sm:space-x-3 flex-wrap">
+          <span className="text-gray-400">TELEMETRY:</span>
+          <span className="font-semibold text-gray-200">LIVE OPD FLOORPLAN</span>
+          <span className="text-obsidian-border hidden sm:inline">|</span>
+          <span className="text-gray-400">HOUR: <span className="text-white">{String(activeHour).padStart(2, '0')}:00</span></span>
         </div>
-        <div className="flex items-center space-x-2 mt-1 sm:mt-0">
-          <span className="text-gray-400">STATE:</span>
+        <div className="flex items-center space-x-1.5">
           <span
-            className="px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider"
+            className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider"
             style={{ color: themeColor, backgroundColor: themeBg, border: `1px solid ${themeColor}40` }}
           >
             {isCritical ? 'CRITICAL BOTTLENECK' : isApproaching ? 'CAPACITY STRAIN' : 'NOMINAL TRANSIT'}
@@ -35,11 +34,12 @@ export default function FloorplanVisualizer({ isOverloaded, waitMins, queueUtili
         </div>
       </div>
 
-      {/* Bespoke Architectural Floorplan SVG */}
-      <div className="w-full overflow-x-auto">
+      {/* Responsive Architectural Floorplan SVG - Zero clipping or overflow on mobile */}
+      <div className="w-full overflow-hidden rounded bg-[#0D0F14]">
         <svg
           viewBox="0 0 860 210"
-          className="w-full min-w-[700px] h-auto select-none font-mono"
+          className="w-full h-auto select-none font-mono block max-w-full"
+          preserveAspectRatio="xMidYMid meet"
           style={{ background: '#0D0F14' }}
         >
           {/* Subtle Grid Backdrop */}
@@ -78,7 +78,6 @@ export default function FloorplanVisualizer({ isOverloaded, waitMins, queueUtili
               stroke="#282D37"
               strokeWidth="1.2"
             />
-            {/* Corner Bracket */}
             <path d="M 20 35 L 20 25 L 30 25" fill="none" stroke="#64748B" strokeWidth="2" />
             <text x="32" y="44" fill="#94A3B8" fontSize="10" fontWeight="600" letterSpacing="1">
               01 // CHECK-IN DESK
@@ -87,7 +86,6 @@ export default function FloorplanVisualizer({ isOverloaded, waitMins, queueUtili
               Digital Kiosk &amp; Registration
             </text>
 
-            {/* Receptionist Counter */}
             <rect x="35" y="75" width="130" height="35" rx="1" fill="#1A1E26" stroke="#333A48" strokeWidth="1" />
             <text x="45" y="96" fill="#CBD5E1" fontSize="10">Kiosk 1 &amp; 2 Active</text>
 
@@ -97,7 +95,7 @@ export default function FloorplanVisualizer({ isOverloaded, waitMins, queueUtili
           </g>
 
           {/* Transit Arrow 1 */}
-          <path d="M 185 105 L 215 105" stroke={themeColor} strokeWidth="1.5" markerEnd="url(#arrow)" />
+          <path d="M 185 105 L 215 105" stroke={themeColor} strokeWidth="1.5" />
 
           {/* ================================================================= */}
           {/* STATION 2: CENTRAL WAITING BAY (X: 220, W: 270) */}
@@ -290,14 +288,14 @@ export default function FloorplanVisualizer({ isOverloaded, waitMins, queueUtili
       </div>
 
       {/* Micro-telemetry footer */}
-      <div className="flex flex-wrap items-center justify-between mt-2 pt-2 border-t border-obsidian-border/40 text-[11px] font-mono text-gray-400">
-        <div className="flex items-center space-x-4">
-          <span>THROUGHPUT: <span className="text-gray-200">~17.5 min / consult</span></span>
+      <div className="flex flex-wrap items-center justify-between mt-2 pt-1.5 border-t border-obsidian-border/40 text-[10px] font-mono text-gray-400 gap-1">
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <span>THROUGHPUT: <span className="text-gray-200">~17.5m/pt</span></span>
           <span className="text-obsidian-border">|</span>
-          <span>DISCHARGE VELOCITY: <span className="text-gray-200">{isCritical ? '0.28 pt/min (Delayed)' : '0.54 pt/min (Nominal)'}</span></span>
+          <span>DISCHARGE: <span className="text-gray-200">{isCritical ? '0.28/min (Lag)' : '0.54/min (Nom)'}</span></span>
         </div>
-        <div className="text-right text-gray-500">
-          Flow synchronized to live model inference loop
+        <div className="text-right text-gray-500 hidden sm:block">
+          Flow synchronized to live inference loop
         </div>
       </div>
     </div>

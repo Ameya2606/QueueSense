@@ -4,7 +4,7 @@ import { Play, Pause, RotateCcw, Calendar, TrendingUp, AlertCircle, Clock } from
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ReferenceLine } from 'recharts';
 import FloorplanVisualizer from './FloorplanVisualizer';
 
-export default function HistoricalReplay({ replayDays = [] }) {
+export default function HistoricalReplay({ replayDays = [], isMobile = false }) {
   const [selectedDate, setSelectedDate] = useState('');
   const [activeHourIndex, setActiveHourIndex] = useState(2); // default 10:00 AM (index 2)
   const [isPlaying, setIsPlaying] = useState(false);
@@ -46,12 +46,12 @@ export default function HistoricalReplay({ replayDays = [] }) {
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-obsidian-surface border border-obsidian-border p-3 rounded-sm font-mono text-xs shadow-xl">
-          <div className="font-bold text-white border-b border-obsidian-border/60 pb-1 mb-1.5">
+        <div className="bg-obsidian-surface border border-obsidian-border p-2.5 rounded-sm font-mono text-xs shadow-xl">
+          <div className="font-bold text-white border-b border-obsidian-border/60 pb-1 mb-1">
             Hour: {label}
           </div>
           {payload.map((entry, index) => (
-            <div key={`item-${index}`} className="flex items-center justify-between space-x-4 py-0.5" style={{ color: entry.color }}>
+            <div key={`item-${index}`} className="flex items-center justify-between space-x-3 py-0.5 text-[11px]" style={{ color: entry.color }}>
               <span>{entry.name}:</span>
               <span className="font-bold">{entry.value} min</span>
             </div>
@@ -63,26 +63,26 @@ export default function HistoricalReplay({ replayDays = [] }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 max-w-full">
       {/* Date Selector & Playback Control Bar */}
-      <div className="bg-obsidian-panel border border-obsidian-border rounded-sm p-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="bg-obsidian-panel border border-obsidian-border rounded-sm p-3 sm:p-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4">
           <div>
             <span className="text-[10px] font-mono text-clinical-blue uppercase tracking-widest block font-bold">
               2024 TEST SET GROUND TRUTH ARCHIVE
             </span>
-            <h2 className="font-display font-bold text-lg text-white flex items-center space-x-2">
+            <h2 className="font-display font-bold text-base sm:text-lg text-white flex items-center space-x-2">
               <span>HISTORICAL CLINIC DAY REPLAY ENGINE</span>
             </h2>
-            <p className="text-xs font-mono text-gray-400 mt-0.5">
-              Select an authentic operating date from the 2024 chronological test holdout (never seen during training).
+            <p className="text-[11px] sm:text-xs font-mono text-gray-400 mt-0.5">
+              Select an authentic operating date from the 2024 chronological test holdout.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             {/* Date Select Dropdown */}
-            <div className="flex items-center space-x-2 bg-obsidian-surface border border-obsidian-border rounded-sm px-3 py-1.5 font-mono text-xs">
-              <Calendar className="w-4 h-4 text-clinical-orange" />
+            <div className="flex items-center space-x-2 bg-obsidian-surface border border-obsidian-border rounded-sm px-2.5 py-1.5 font-mono text-xs w-full sm:w-auto">
+              <Calendar className="w-3.5 h-3.5 text-clinical-orange flex-shrink-0" />
               <select
                 value={selectedDate}
                 onChange={(e) => {
@@ -90,57 +90,59 @@ export default function HistoricalReplay({ replayDays = [] }) {
                   setActiveHourIndex(0);
                   setIsPlaying(false);
                 }}
-                className="bg-transparent text-white outline-none cursor-pointer"
+                className="bg-transparent text-white outline-none cursor-pointer w-full text-xs"
               >
                 {replayDays.map((d) => (
                   <option key={d.date} value={d.date} className="bg-obsidian-surface text-white">
-                    {d.date} ({d.day_of_week}) — {d.total_day_attended} attended, avg {d.avg_day_wait}m
+                    {d.date} ({d.day_of_week}) — {d.total_day_attended} attended
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Play / Pause Button */}
-            <button
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="flex items-center space-x-2 px-3 py-1.5 rounded-sm font-mono text-xs font-semibold bg-clinical-orange text-black hover:bg-orange-600 transition-colors"
-            >
-              {isPlaying ? <Pause className="w-3.5 h-3.5 fill-black" /> : <Play className="w-3.5 h-3.5 fill-black" />}
-              <span>{isPlaying ? 'PAUSE TIMELINE' : 'PLAY REPLAY'}</span>
-            </button>
+            <div className="flex items-center space-x-2">
+              {/* Play / Pause Button */}
+              <button
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-sm font-mono text-xs font-semibold bg-clinical-orange text-black hover:bg-orange-600 transition-colors"
+              >
+                {isPlaying ? <Pause className="w-3.5 h-3.5 fill-black" /> : <Play className="w-3.5 h-3.5 fill-black" />}
+                <span>{isPlaying ? 'PAUSE' : 'PLAY REPLAY'}</span>
+              </button>
 
-            {/* Reset */}
-            <button
-              onClick={() => {
-                setActiveHourIndex(0);
-                setIsPlaying(false);
-              }}
-              className="p-1.5 rounded-sm border border-obsidian-border text-gray-400 hover:text-white"
-              title="Reset to 08:00 AM"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
+              {/* Reset */}
+              <button
+                onClick={() => {
+                  setActiveHourIndex(0);
+                  setIsPlaying(false);
+                }}
+                className="p-1.5 rounded-sm border border-obsidian-border text-gray-400 hover:text-white"
+                title="Reset to 08:00 AM"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Timeline Hour Scrubbing Bar */}
-        <div className="mt-5 pt-4 border-t border-obsidian-border/60">
+        {/* Timeline Hour Scrubbing Bar - 5 columns on mobile (2 rows), 10 on desktop */}
+        <div className="mt-4 pt-3 border-t border-obsidian-border/60">
           <div className="flex items-center justify-between text-xs font-mono mb-2">
-            <span className="text-gray-400">SCRUBBING TIMELINE:</span>
+            <span className="text-gray-400 text-[11px]">TIMELINE SCRUBBER:</span>
             <span className="font-bold text-white flex items-center space-x-2">
-              <Clock className="w-3.5 h-3.5 text-clinical-orange" />
-              <span>{activeHourData.hour_label}</span>
-              <span className={`px-1.5 py-0.2 text-[10px] rounded ${
+              <Clock className="w-3 h-3 text-clinical-orange" />
+              <span className="text-xs">{activeHourData.hour_label}</span>
+              <span className={`px-1.5 py-0.2 text-[9px] sm:text-[10px] rounded font-bold ${
                 activeHourData.actual_overloaded
                   ? 'bg-clinical-orange/20 text-clinical-orange border border-clinical-orange/40'
                   : 'bg-clinical-emerald/20 text-clinical-emerald border border-clinical-emerald/40'
               }`}>
-                {activeHourData.actual_overloaded ? 'HISTORICAL OVERLOAD' : 'NOMINAL CAPACITY'}
+                {activeHourData.actual_overloaded ? 'OVERLOAD' : 'NOMINAL'}
               </span>
             </span>
           </div>
 
-          <div className="grid grid-cols-10 gap-1.5">
+          <div className="grid grid-cols-5 md:grid-cols-10 gap-1.5">
             {currentDay.hours.map((h, idx) => {
               const isSelected = activeHourIndex === idx;
               return (
@@ -150,7 +152,7 @@ export default function HistoricalReplay({ replayDays = [] }) {
                     setActiveHourIndex(idx);
                     setIsPlaying(false);
                   }}
-                  className={`py-2 px-1 text-center font-mono rounded-sm border transition-all text-xs ${
+                  className={`py-1.5 px-1 text-center font-mono rounded-sm border transition-all text-xs ${
                     isSelected
                       ? 'border-clinical-orange bg-clinical-orange/20 text-white font-bold ring-1 ring-clinical-orange'
                       : h.actual_overloaded
@@ -176,105 +178,102 @@ export default function HistoricalReplay({ replayDays = [] }) {
         queueUtilization={activeHourData.actual_wait_mins / 45.0}
         activeHour={activeHourData.sched_hour}
         riskCategory={activeHourData.actual_overloaded ? 'Critical Overload' : 'Nominal Flow'}
+        isMobile={isMobile}
       />
 
       {/* Hourly Curves: Actual vs MLP vs LSTM */}
-      <div className="bg-obsidian-panel border border-obsidian-border rounded-sm p-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-4 border-b border-obsidian-border/60 text-xs font-mono gap-2">
-          <div className="flex items-center space-x-2 text-white font-semibold">
-            <TrendingUp className="w-4 h-4 text-clinical-blue" />
-            <span>HOURLY WAIT-TIME PROGRESSION // ACTUAL VS. MLP VS. LSTM</span>
+      <div className="bg-obsidian-panel border border-obsidian-border rounded-sm p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2 mb-3 border-b border-obsidian-border/60 text-[11px] sm:text-xs font-mono gap-1.5">
+          <div className="flex items-center space-x-1.5 text-white font-semibold">
+            <TrendingUp className="w-3.5 h-3.5 text-clinical-blue" />
+            <span>HOURLY WAIT CURVES // ACTUAL VS. MLP VS. LSTM</span>
           </div>
-          <div className="flex items-center space-x-4 text-[11px]">
-            <span className="flex items-center space-x-1.5">
-              <span className="w-3 h-0.5 bg-gray-200 inline-block"></span>
-              <span className="text-gray-300">Ground Truth Actual</span>
+          <div className="flex items-center space-x-3 text-[10px] sm:text-[11px] flex-wrap">
+            <span className="flex items-center space-x-1">
+              <span className="w-2.5 h-0.5 bg-gray-200 inline-block"></span>
+              <span className="text-gray-300">Actual</span>
             </span>
-            <span className="flex items-center space-x-1.5">
-              <span className="w-3 h-0.5 bg-[#FF4F00] inline-block"></span>
-              <span className="text-[#FF4F00]">MLP Predicted</span>
+            <span className="flex items-center space-x-1">
+              <span className="w-2.5 h-0.5 bg-[#FF4F00] inline-block"></span>
+              <span className="text-[#FF4F00]">MLP</span>
             </span>
-            <span className="flex items-center space-x-1.5">
-              <span className="w-3 h-0.5 bg-[#0284C7] inline-block"></span>
-              <span className="text-[#0284C7]">LSTM Sequential</span>
+            <span className="flex items-center space-x-1">
+              <span className="w-2.5 h-0.5 bg-[#0284C7] inline-block"></span>
+              <span className="text-[#0284C7]">LSTM</span>
             </span>
           </div>
         </div>
 
-        <div className="h-64 w-full">
+        <div className="w-full" style={{ height: isMobile ? 220 : 280 }}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={currentDay.hours} margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
+            <LineChart data={currentDay.hours} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#252A36" />
-              <XAxis dataKey="hour_label" stroke="#64748B" tick={{ fontSize: 11, fontFamily: 'monospace' }} />
-              <YAxis stroke="#64748B" tick={{ fontSize: 11, fontFamily: 'monospace' }} unit="m" />
+              <XAxis dataKey="hour_label" stroke="#64748B" tick={{ fontSize: isMobile ? 9 : 11, fontFamily: 'monospace' }} interval={isMobile ? 1 : 0} />
+              <YAxis stroke="#64748B" tick={{ fontSize: isMobile ? 9 : 11, fontFamily: 'monospace' }} unit="m" />
               <Tooltip content={<CustomTooltip />} />
-              <ReferenceLine y={45} stroke="#FF4F00" strokeDasharray="3 3" label={{ value: 'Overload Cap (45m)', fill: '#FF4F00', fontSize: 10, position: 'insideTopRight' }} />
-              <Line type="monotone" dataKey="actual_wait_mins" name="Actual Wait" stroke="#F1F5F9" strokeWidth={2.5} dot={{ r: 3, fill: '#F1F5F9' }} />
-              <Line type="monotone" dataKey="mlp_pred_wait_mins" name="MLP Predicted" stroke="#FF4F00" strokeWidth={1.8} strokeDasharray="4 4" dot={{ r: 2.5, fill: '#FF4F00' }} />
-              <Line type="monotone" dataKey="lstm_pred_wait_mins" name="LSTM Predicted" stroke="#0284C7" strokeWidth={2} dot={{ r: 3, fill: '#0284C7' }} />
+              <ReferenceLine y={45} stroke="#FF4F00" strokeDasharray="3 3" label={{ value: '45m Cap', fill: '#FF4F00', fontSize: 9, position: 'insideTopRight' }} />
+              <Line type="monotone" dataKey="actual_wait_mins" name="Actual Wait" stroke="#F1F5F9" strokeWidth={2.2} dot={{ r: 2.5, fill: '#F1F5F9' }} />
+              <Line type="monotone" dataKey="mlp_pred_wait_mins" name="MLP Predicted" stroke="#FF4F00" strokeWidth={1.6} strokeDasharray="4 4" dot={{ r: 2, fill: '#FF4F00' }} />
+              <Line type="monotone" dataKey="lstm_pred_wait_mins" name="LSTM Predicted" stroke="#0284C7" strokeWidth={2} dot={{ r: 2.5, fill: '#0284C7' }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* Comprehensive Hour-by-Hour Ground Truth Telemetry Table */}
-      <div className="bg-obsidian-panel border border-obsidian-border rounded-sm p-4 overflow-x-auto">
-        <div className="flex items-center justify-between pb-3 mb-3 border-b border-obsidian-border/60 text-xs font-mono">
-          <span className="font-semibold text-white">HOUR-BY-HOUR AUDIT TRAIL // {currentDay.date} ({currentDay.day_of_week})</span>
-          <span className="text-gray-500 text-[11px]">ALL 10 OPERATING HOURS (08:00 - 17:00)</span>
+      <div className="bg-obsidian-panel border border-obsidian-border rounded-sm p-3 sm:p-4 overflow-x-auto">
+        <div className="flex items-center justify-between pb-2 mb-2 border-b border-obsidian-border/60 text-xs font-mono">
+          <span className="font-semibold text-white text-[11px] sm:text-xs">HOUR-BY-HOUR AUDIT // {currentDay.date}</span>
+          <span className="text-gray-500 text-[10px]">SCROLL HORIZONTALLY &rarr;</span>
         </div>
 
-        <table className="w-full text-left font-mono text-xs border-collapse">
-          <thead>
-            <tr className="border-b border-obsidian-border text-gray-400 text-[10px] uppercase">
-              <th className="py-2 px-3">Hour</th>
-              <th className="py-2 px-3">Booked Slots</th>
-              <th className="py-2 px-3">Scheduled</th>
-              <th className="py-2 px-3">Attended</th>
-              <th className="py-2 px-3">No-Shows</th>
-              <th className="py-2 px-3 text-right">Actual Wait</th>
-              <th className="py-2 px-3 text-right">MLP Wait</th>
-              <th className="py-2 px-3 text-right">LSTM Wait</th>
-              <th className="py-2 px-3 text-center">Ground Truth</th>
-              <th className="py-2 px-3 text-center">LSTM Proba</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-obsidian-border/40">
-            {currentDay.hours.map((row, idx) => {
-              const isSelected = activeHourIndex === idx;
-              return (
-                <tr
-                  key={row.sched_hour}
-                  onClick={() => setActiveHourIndex(idx)}
-                  className={`cursor-pointer transition-colors ${
-                    isSelected ? 'bg-clinical-orange/15 font-semibold text-white' : 'hover:bg-obsidian-hover text-gray-300'
-                  }`}
-                >
-                  <td className="py-2.5 px-3">{row.hour_label}</td>
-                  <td className="py-2.5 px-3">{row.booked_slots}</td>
-                  <td className="py-2.5 px-3">{row.total_scheduled}</td>
-                  <td className="py-2.5 px-3 text-clinical-emerald font-bold">{row.attended_count}</td>
-                  <td className="py-2.5 px-3 text-gray-500">{row.no_show_count}</td>
-                  <td className="py-2.5 px-3 text-right font-bold text-white">{row.actual_wait_mins.toFixed(1)}m</td>
-                  <td className="py-2.5 px-3 text-right text-clinical-orange">{row.mlp_pred_wait_mins.toFixed(1)}m</td>
-                  <td className="py-2.5 px-3 text-right text-clinical-blue font-bold">{row.lstm_pred_wait_mins.toFixed(1)}m</td>
-                  <td className="py-2.5 px-3 text-center">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                      row.actual_overloaded
-                        ? 'bg-clinical-orange/20 text-clinical-orange border border-clinical-orange/40'
-                        : 'bg-clinical-emerald/20 text-clinical-emerald border border-clinical-emerald/40'
-                    }`}>
-                      {row.actual_overloaded ? 'OVERLOAD' : 'NOMINAL'}
-                    </span>
-                  </td>
-                  <td className="py-2.5 px-3 text-center font-mono">
-                    {(row.lstm_overload_prob * 100).toFixed(0)}%
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div className="min-w-[560px]">
+          <table className="w-full text-left font-mono text-xs border-collapse">
+            <thead>
+              <tr className="border-b border-obsidian-border text-gray-400 text-[10px] uppercase">
+                <th className="py-2 px-2.5">Hour</th>
+                <th className="py-2 px-2.5">Booked</th>
+                <th className="py-2 px-2.5">Sched</th>
+                <th className="py-2 px-2.5">Attended</th>
+                <th className="py-2 px-2.5 text-right">Actual Wait</th>
+                <th className="py-2 px-2.5 text-right">MLP Wait</th>
+                <th className="py-2 px-2.5 text-right">LSTM Wait</th>
+                <th className="py-2 px-2.5 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-obsidian-border/40">
+              {currentDay.hours.map((row, idx) => {
+                const isSelected = activeHourIndex === idx;
+                return (
+                  <tr
+                    key={row.sched_hour}
+                    onClick={() => setActiveHourIndex(idx)}
+                    className={`cursor-pointer transition-colors ${
+                      isSelected ? 'bg-clinical-orange/15 font-semibold text-white' : 'hover:bg-obsidian-hover text-gray-300'
+                    }`}
+                  >
+                    <td className="py-2 px-2.5">{row.hour_label}</td>
+                    <td className="py-2 px-2.5">{row.booked_slots}</td>
+                    <td className="py-2 px-2.5">{row.total_scheduled}</td>
+                    <td className="py-2 px-2.5 text-clinical-emerald font-bold">{row.attended_count}</td>
+                    <td className="py-2 px-2.5 text-right font-bold text-white">{row.actual_wait_mins.toFixed(1)}m</td>
+                    <td className="py-2 px-2.5 text-right text-clinical-orange">{row.mlp_pred_wait_mins.toFixed(1)}m</td>
+                    <td className="py-2 px-2.5 text-right text-clinical-blue font-bold">{row.lstm_pred_wait_mins.toFixed(1)}m</td>
+                    <td className="py-2 px-2.5 text-center">
+                      <span className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${
+                        row.actual_overloaded
+                          ? 'bg-clinical-orange/20 text-clinical-orange border border-clinical-orange/40'
+                          : 'bg-clinical-emerald/20 text-clinical-emerald border border-clinical-emerald/40'
+                      }`}>
+                        {row.actual_overloaded ? 'OVERLOAD' : 'NOMINAL'}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

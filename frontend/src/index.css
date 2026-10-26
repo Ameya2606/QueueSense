@@ -59,3 +59,69 @@
 .animate-signal {
   animation: signal-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Mobile safe area padding utilities */
+.pb-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Enhanced mobile touch sliders */
+input[type="range"].touch-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 28px;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-x;
+}
+
+input[type="range"].touch-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  background: #1A1E26;
+  border-radius: 3px;
+  border: 1px solid #282D37;
+}
+
+input[type="range"].touch-slider::-moz-range-track {
+  height: 6px;
+  background: #1A1E26;
+  border-radius: 3px;
+  border: 1px solid #282D37;
+}
+
+input[type="range"].touch-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -8px;
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+  background: #FF4F00;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 6px rgba(255, 79, 0, 0.6);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+input[type="range"].touch-slider::-moz-range-thumb {
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+  background: #FF4F00;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 6px rgba(255, 79, 0, 0.6);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+input[type="range"].touch-slider:active::-webkit-slider-thumb {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(255, 79, 0, 0.9);
+}
+
+input[type="range"].touch-slider:active::-moz-range-thumb {
+  transform: scale(1.15);
+  box-shadow: 0 0 10px rgba(255, 79, 0, 0.9);
+}
+
